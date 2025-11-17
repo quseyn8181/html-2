@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Quseyn Business Simulator</title>
+<style>
+    body { font-family: Arial; background:#111; color:white; margin:20px; }
+    h1 { text-align:center; color:#ffd700; }
+    .business { background:#222; padding:15px; margin:10px 0; border-radius:10px; }
+    button { padding:10px 15px; background:#ffd700; color:#000; border:none; border-radius:8px; font-weight:bold; }
+    .promo-area { margin-top:20px; padding:15px; background:#222; border-radius:10px; }
+    input { padding:10px; border-radius:5px; border:none; margin-right:10px; }
+</style>
+</head>
+<body>
+
+<h1>Бизнес Симулятор Quseyn</h1>
+
+<h2>Баланс: <span id="money">0</span>$</h2>
+
+<div id="businessList"></div>
+
+<div class="promo-area">
+    <h3>Промокод:</h3>
+    <input id="promoInput" placeholder="Введите код">
+    <button onclick="usePromo()">Активировать</button>
+</div>
+
+<script>
+let money = 100; 
+let incomePerSec = 0;
+
+const businesses = [
+    { name: "Ларёк", price: 50, income: 1 },
+    { name: "Шаурма", price: 200, income: 5 },
+    { name: "Магазин", price: 500, income: 10 },
+    { name: "Кофейня", price: 1200, income: 25 },
+    { name: "АЗС", price: 3000, income: 50 },
+    { name: "Автосервис", price: 5000, income: 80 },
+    { name: "Супермаркет", price: 10000, income: 150 },
+    { name: "Ферма", price: 20000, income: 300 },
+    { name: "Фабрика", price: 50000, income: 700 },
+    { name: "Завод", price: 100000, income: 1500 },
+    { name: "IT Компания", price: 250000, income: 4000 },
+    { name: "Гипермаркет", price: 500000, income: 7000 },
+    { name: "Quseyn Industries", price: 999999, income: 20000 }
+];
+
+function renderBusinesses() {
+    const list = document.getElementById("businessList");
+    list.innerHTML = "";
+
+    businesses.forEach((biz, index) => {
+        const div = document.createElement("div");
+        div.className = "business";
+        div.innerHTML = `
+            <h3>${biz.name}</h3>
+            <p>Цена: ${biz.price}$ — Прибыль: +${biz.income}$/сек</p>
+            <button onclick="buyBusiness(${index})">Купить</button>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function buyBusiness(i) {
+    const biz = businesses[i];
+    if (money >= biz.price) {
+        money -= biz.price;
+        incomePerSec += biz.income;
+        biz.price = Math.floor(biz.price * 1.4);
+        updateMoney();
+        renderBusinesses();
+    } else {
+        alert("Недостаточно денег!");
+    }
+}
+
+function updateMoney() {
+    document.getElementById("money").innerText = money;
+}
+
+setInterval(() => {
+    money += incomePerSec;
+    updateMoney();
+}, 1000);
+
+let promoUsed = false;
+
+function usePromo() {
+    const code = document.getElementById("promoInput").value.trim();
+
+    if (promoUsed) {
+        alert("Промокод уже использован");
+        return;
+    }
+
+    if (code === "qusi8181") {
+        money += 1000;
+        promoUsed = true;
+        updateMoney();
+        alert("Активировано! +1000$");
+    } else {
+        alert("Неверный промокод!");
+    }
+}
+
+renderBusinesses();
+updateMoney();
+</script>
+
+</body>
+</html>
